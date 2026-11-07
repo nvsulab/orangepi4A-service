@@ -1,0 +1,91 @@
+{
+  "Fists": {
+    "state": [
+      [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    ],
+    "effect": "wave"
+  },
+  "Invoker_fire": {
+    "state": [
+      [
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      [
+        true,
+        true,
+        true,
+        false,
+        false
+      ]
+    ],
+    "effect": "fire"
+  },
+  "OMG": {
+    "state": [
+      [
+        false,
+        true,
+        true,
+        true,
+        true
+      ],
+      [
+        false,
+        true,
+        true,
+        true,
+        true
+      ]
+    ],
+    "effect": "water"
+  },
+  "Thunder": {
+    "state": [
+      [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      [
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    ],
+    "effect": "lightning"
+  },
+  "gojo": {
+    "state": [
+      [
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      null
+    ],
+    "effect": "rainbow"
+  }
+}

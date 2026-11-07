@@ -1,0 +1,14 @@
+[Unit]
+Description=Orange Pi Dashboard
+After=network.target
+
+[Service]
+Type=simple
+User=orangepi
+WorkingDirectory=@PROJECT_DIR@/dashboard
+ExecStart=/usr/bin/python3 -m http.server 57575
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

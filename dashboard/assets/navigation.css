@@ -1,0 +1,5 @@
+.home-link { display:inline-flex; align-items:center; gap:10px; padding:12px 16px; border:1px solid rgba(255,255,255,.2); border-radius:12px; background:#202b46; color:#fff; text-decoration:none; font:600 15px/1.4 'Segoe UI',sans-serif; }
+.home-link:hover { background:#303f60; border-color:#e94560; }
+.home-link:focus-visible { outline:3px solid #ffd93d; outline-offset:4px; }
+.home-link img { width:26px; height:26px; object-fit:contain; }
+.portal-nav { margin-bottom:24px; }

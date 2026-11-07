@@ -1,0 +1,14 @@
+[Unit]
+Description=MJPG Streamer Camera Service
+After=network.target multi-user.target
+
+[Service]
+Type=simple
+ExecStart=@PROJECT_DIR@/scripts/start_camera.sh
+Restart=always
+RestartSec=5
+User=orangepi
+Group=orangepi
+
+[Install]
+WantedBy=multi-user.target

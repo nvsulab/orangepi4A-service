@@ -1,0 +1,17 @@
+[Unit]
+Description=My Python App (app.py)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=@PROJECT_DIR@/led-panel
+ExecStart=@PROJECT_DIR@/led-panel/venv/bin/python @PROJECT_DIR@/led-panel/app.py
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

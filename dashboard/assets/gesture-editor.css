@@ -1,0 +1,52 @@
+.gesture-item { gap: 8px; }
+.gesture-text { min-width: 0; overflow-wrap: anywhere; }
+.gesture-text .eff { display: block; margin-top: 3px; font-size: .8em; }
+.gesture-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.gesture-icon {
+    color: #f3f5fb; background: #293652; border: 1px solid #485577; border-radius: 8px;
+    cursor: pointer; width: 40px; height: 40px; display: grid; place-items: center;
+}
+.gesture-icon svg { width: 21px; height: 21px; }
+.gesture-icon:hover { background: #3c4b71; }
+.gesture-icon-danger { color: #ff858d; border-color: #9b4658; }
+.gesture-icon-danger:hover { background: #552e46; }
+.gesture-record-controls { margin: 12px 0 4px; }
+.gesture-dialog {
+    margin: auto; width: min(560px, calc(100% - 28px)); max-height: calc(100% - 28px);
+    overflow: auto; padding: 22px; border: 1px solid #485577; border-radius: 16px;
+    background: #18233d; color: #f4f6ff;
+}
+.gesture-dialog::backdrop { background: #090c17bf; }
+.gesture-dialog h2 { margin-bottom: 12px; }
+.gesture-dialog p { margin: 8px 0; overflow-wrap: anywhere; }
+.gesture-dialog label { display: block; margin-bottom: 10px; }
+.gesture-dialog input:not([type=checkbox]), .gesture-dialog select {
+    display: block; width: 100%; margin-top: 5px; padding: 8px 10px;
+    border: 1px solid #5c6a8c; border-radius: 8px; background: #25334f; color: #fff; font: inherit;
+}
+.gesture-dialog input[type=color] { height: 44px; }
+.gesture-dialog [hidden], .gesture-record-controls [hidden] { display: none; }
+.gesture-dialog .btn-row { justify-content: flex-end; margin-top: 14px; }
+.gesture-error { color: #ffadb2; overflow-wrap: anywhere; }
+.gesture-hands { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 12px 0; }
+.gesture-hand { min-width: 0; padding: 10px; border-radius: 12px; background: #202d48; text-align: center; }
+.gesture-hand svg { display: block; width: 100%; height: auto; max-height: 175px; }
+.hand-palm { fill: #435372; stroke: #8995af; }
+.finger-sector { cursor: pointer; }
+.finger-sector path { fill: #a94354; stroke: #f19aa4; stroke-width: 2; }
+.finger-sector.finger-open path { fill: #287b59; stroke: #84ddb1; }
+.finger-sector text {
+    fill: #fff; text-anchor: middle; dominant-baseline: middle;
+    font: bold 13px system-ui; pointer-events: none;
+}
+.finger-sector[role=button]:hover path, .finger-sector[role=button]:focus-visible path {
+    fill: #ffd93d; stroke: #fff2a8;
+}
+.finger-sector[role=button]:hover text, .finger-sector[role=button]:focus-visible text { fill: #242015; }
+.finger-absent { cursor: default; opacity: .4; }
+.finger-absent path { fill: #4d5b77; stroke: #7e8ca9; }
+@media (max-width: 420px) {
+    .gesture-dialog { padding: 14px; }
+    .gesture-hands { gap: 6px; }
+    .gesture-hand { padding: 5px; }
+}

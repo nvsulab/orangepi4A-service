@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    <title>Orange Pi 4A — Панель управления</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/logo.svg">
+    <script src="/assets/navigation.js" defer></script>
+    <link rel = "stylesheet" href = "/assets/style.css">
+    
+</head>
+<body>
+<div class="page">
+    <header class="masthead">
+        <div class="brand">
+            <img src="/assets/logo.svg" alt="Логотип проекта" width="56" height="57">
+            <span class="brand-name">Orange Pi <span class="model">4A</span></span>
+        </div>
+        <span class="network"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M3 8a15 15 0 0 1 18 0M6 12a10 10 0 0 1 12 0M9 16a5 5 0 0 1 6 0"/><circle cx="12" cy="20" r=".8" fill="currentColor" stroke="none"/></svg>Локальная сеть</span>
+    </header>
+    <main>
+        <h1>Панель управления</h1>
+        <nav class="services" aria-label="Сервисы Orange Pi">
+            <a class="service terminal" href="http://192.168.12.1:8000/" data-service-port="8000">
+                <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 6 6 6-6 6M14 18h5"/></svg></span>
+                <div><h2>Терминал</h2><p>Командная строка</p></div>
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+            </a>
+            <a class="service camera" href="http://192.168.12.1:8080/" data-service-port="8080">
+                <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="13" height="13" rx="3"/><path d="m16 10 5-3v11l-5-3M7 3h5"/></svg></span>
+                <div><h2>Камера</h2><p>Прямой эфир</p></div>
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+            </a>
+            <a class="service led" href="http://192.168.12.1:3000/" data-service-port="3000">
+                <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17h6m-6 3h6M8 12a6 6 0 1 1 8 0c-1 .8-1 1.5-1 2H9c0-.5 0-1.2-1-2ZM12 1v1M2 8h1m18 0h1M4.4 2.4l1 1m13.2 0 1-1"/></svg></span>
+                <div><h2>LED-лента</h2><p>Цвет и эффекты</p></div>
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+            </a>
+        </nav>
+    </main>
+    <footer>
+        <p class="footer-label">Разработчики</p>
+        <ul class="developers"><li>Кадир Тагиров</li><li>Никита Ватолин</li><li>Максим Мухамадияров</li></ul>
+    </footer>
+</div>
+</body>
+</html>

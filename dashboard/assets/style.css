@@ -1,0 +1,63 @@
+
+        :root { color-scheme: light; --ink: #19251f; --muted: #737c76; --green: #25824a; --orange: #ed9c2b; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #fff; color: var(--ink); font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-font-smoothing: antialiased; }
+        .page { width: min(1120px, 100%); min-height: 100vh; min-height: 100svh; margin: auto; padding: 38px 48px 28px; display: flex; flex-direction: column; }
+        .masthead { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+        .brand { display: flex; align-items: center; gap: 14px; }
+        .brand img { display: block; width: 56px; height: 57px; object-fit: contain; }
+        .brand-name { font-weight: 650; font-size: 20px; letter-spacing: -.6px; }
+        .model { color: var(--muted); font-weight: 400; }
+        .network { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f3f7f3; color: #55715d; border-radius: 999px; font-size: 12px; white-space: nowrap; }
+        .network svg { width: 15px; height: 15px; }
+        main { flex: 1; padding: clamp(60px, 10vh, 110px) 0 72px; }
+        h1 { margin: 0 0 42px; font-size: clamp(34px, 5vw, 58px); line-height: 1.12; font-weight: 600; letter-spacing: -2.4px; }
+        h1::after { content: '.'; color: var(--orange); }
+        .services { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+        .service { position: relative; display: flex; flex-direction: column; min-height: 248px; padding: 28px; border: 1px solid #e6eae5; border-radius: 22px; background: #f8f9f6; text-decoration: none; color: inherit; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+        .service:hover { transform: translateY(-5px); border-color: #b9c8bc; box-shadow: 0 14px 32px #203b2510; }
+        .service:focus-visible { outline: 3px solid var(--green); outline-offset: 5px; }
+        .service.camera { background: #f1f7f0; border-color: #e3ecdf; }
+        .service.led { background: #fff7eb; border-color: #f3e8d6; }
+        .icon { display: grid; place-items: center; width: 56px; height: 56px; margin-bottom: 38px; border-radius: 16px; background: #24392d; color: #b8e1b4; }
+        .icon svg { width: 28px; height: 28px; }
+        .camera .icon { background: #e0efdb; color: #367748; }
+        .led .icon { background: #fce9c9; color: #b87617; }
+        h2 { margin: 0 0 7px; font-size: 23px; font-weight: 600; letter-spacing: -.6px; }
+        .service p { margin: 0; color: #737c76; font-size: 14px; line-height: 1.5; }
+        .arrow { position: absolute; top: 32px; right: 26px; width: 22px; height: 22px; color: #88918a; transition: transform .18s ease; }
+        .service:hover .arrow { transform: translateX(3px); color: var(--ink); }
+        footer { display: flex; align-items: baseline; justify-content: space-between; gap: 18px 32px; padding-top: 24px; border-top: 1px solid #e9ece7; }
+        .footer-label { margin: 0; font-size: 12px; color: var(--muted); }
+        .developers { display: flex; flex-wrap: wrap; gap: 9px 24px; padding: 0; margin: 0; list-style: none; font-size: 12px; line-height: 1.6; color: #58645c; }
+        @media (max-width: 800px) {
+            .page { padding: 28px 28px 24px; }
+            .service { padding: 23px; min-height: 230px; }
+            .arrow { right: 21px; top: 28px; }
+            h2 { font-size: 21px; }
+            footer { flex-direction: column; gap: 10px; }
+        }
+        @media (max-width: 650px) {
+            .page { padding: 24px 22px; }
+            .brand { gap: 10px; }
+            .brand img { width: 46px; height: 47px; }
+            .brand-name { font-size: 18px; }
+            .network { padding: 7px 9px; font-size: 11px; gap: 6px; }
+            main { padding: 56px 0 48px; }
+            h1 { margin-bottom: 28px; letter-spacing: -1.3px; }
+            .services { grid-template-columns: 1fr; gap: 12px; }
+            .service { min-height: 116px; padding: 24px; padding-right: 56px; flex-direction: row; align-items: center; gap: 20px; border-radius: 19px; }
+            .icon { flex: 0 0 52px; width: 52px; height: 52px; margin: 0; border-radius: 14px; }
+            .arrow { top: calc(50% - 11px); right: 22px; }
+            h2 { font-size: 21px; margin-bottom: 4px; }
+            .service p { font-size: 13px; }
+        }
+        @media (max-width: 370px) {
+            .page { padding-inline: 16px; }
+            .network { font-size: 10px; }
+            .brand-name { font-size: 16px; }
+            .brand img { width: 40px; height: 41px; }
+            h1 { font-size: 31px; }
+        }
+        @media (prefers-reduced-motion: reduce) { .service, .arrow { transition: none; } .service:hover { transform: none; } }
+

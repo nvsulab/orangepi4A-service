@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LED панель — Orange Pi 4A</title>
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg">
+<link rel="stylesheet" href="/assets/navigation.css">
+<script src="/assets/navigation.js" defer></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    min-height: 100vh; color: #fff; padding: 20px;
+}
+.container { max-width: 900px; margin: 0 auto; }
+.header { text-align: center; margin-bottom: 30px; }
+.header h1 { color: #ffd93d; font-size: 2.2em; margin-bottom: 8px; }
+.header p { color: #a0a0b0; }
+
+.status-bar {
+    background: rgba(255,255,255,.05);
+    border-radius: 10px; padding: 12px 20px; margin-bottom: 25px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: #a0a0b0; font-size: .9em; flex-wrap: wrap; gap: 10px;
+}
+.status-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    display: inline-block; margin-right: 8px;
+}
+.status-dot.online { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+.status-dot.busy   { background: #ffd93d; box-shadow: 0 0 10px #ffd93d; }
+.status-dot.off    { background: #ff5555; box-shadow: 0 0 10px #ff5555; }
+
+.section {
+    background: rgba(255,255,255,.05);
+    border: 2px solid rgba(255,255,255,.08);
+    border-radius: 15px; padding: 22px; margin-bottom: 22px;
+}
+.section h2 { color: #e94560; margin-bottom: 18px; font-size: 1.3em; }
+.section h3 { color: #ffd93d; margin: 18px 0 12px; font-size: 1.05em; }
+.section p.desc { color: #a0a0b0; margin-bottom: 14px; font-size: .9em; }
+
+.color-picker-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    align-items: center;
+}
+@media (max-width: 640px) { .color-picker-row { grid-template-columns: 1fr; } }
+
+input[type=color] {
+    width: 100%; height: 70px; border: none; border-radius: 12px;
+    cursor: pointer; background: transparent;
+}
+.color-preview {
+    height: 70px; border-radius: 12px;
+    border: 2px solid rgba(255,255,255,.15);
+    box-shadow: inset 0 0 20px rgba(0,0,0,.5);
+    transition: background .2s;
+    display: flex; align-items: center; justify-content: center;
+    color: #000; font-weight: bold; font-family: monospace;
+}
+.rgb-inputs {
+    display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;
+}
+.rgb-inputs label {
+    flex: 1; display: flex; flex-direction: column; gap: 4px;
+    color: #a0a0b0; font-size: .8em;
+}
+.rgb-inputs input {
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    color: #fff; padding: 8px; border-radius: 8px; font-family: monospace;
+}
+
+.btn {
+    background: rgba(255,255,255,.08);
+    border: 2px solid rgba(255,255,255,.15);
+    color: #fff; padding: 12px 20px;
+    border-radius: 10px; cursor: pointer; font-size: 1em;
+    transition: all .2s; font-weight: 500;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn.primary { border-color: #00ff88; background: rgba(0,255,136,.12); }
+.btn.primary:hover { background: rgba(0,255,136,.25); }
+.btn.danger { border-color: #ff5555; background: rgba(255,85,85,.12); }
+.btn.danger:hover { background: rgba(255,85,85,.25); }
+.btn.active { border-color: #ffd93d; background: rgba(255,217,61,.2); box-shadow: 0 0 15px rgba(255,217,61,.4); }
+.btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+.btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.templates {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+}
+.template-btn {
+    padding: 20px 12px; border-radius: 12px; cursor: pointer;
+    background: rgba(255,255,255,.06);
+    border: 2px solid rgba(255,255,255,.1);
+    color: #fff; text-align: center; transition: all .2s;
+    font-size: .95em;
+}
+.template-btn:hover { transform: translateY(-2px); }
+.template-btn[data-tpl=wave]:hover      { border-color: #00bfff; background: rgba(0,191,255,.12); }
+.template-btn[data-tpl=fire]:hover      { border-color: #ff6b3d; background: rgba(255,107,61,.12); }
+.template-btn[data-tpl=water]:hover     { border-color: #00aaff; background: rgba(0,170,255,.12); }
+.template-btn[data-tpl=lightning]:hover { border-color: #c8c8ff; background: rgba(200,200,255,.15); }
+.template-btn[data-tpl=rainbow]:hover   { border-color: #ff44cc; background: rgba(255,68,204,.12); }
+.template-btn.active { border-color: #ffd93d; background: rgba(255,217,61,.2); }
+
+.template-btn .emoji { font-size: 2em; display: block; margin-bottom: 6px; }
+
+.slider-row {
+    display: flex; align-items: center; gap: 14px;
+}
+.slider-row input[type=range] {
+    flex: 1; height: 6px;
+}
+.slider-row input[type=number] {
+    width: 75px; background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    color: #fff; padding: 8px; border-radius: 8px;
+    font-family: monospace; text-align: center;
+}
+
+/* превью камеры */
+.camera-preview-box {
+    display: none;
+    margin-bottom: 18px;
+    text-align: center;
+}
+.camera-preview-box.active { display: block; }
+.camera-preview-box img {
+    max-width: 100%; width: 640px;
+    border-radius: 12px;
+    border: 2px solid rgba(0, 255, 136, .4);
+    box-shadow: 0 0 20px rgba(0, 255, 136, .25);
+    background: #000;
+}
+.camera-preview-box .badge {
+    display: inline-block;
+    margin-top: 8px;
+    color: #ff5555;
+    font-size: .9em;
+    font-weight: 600;
+    animation: pulse 1.4s infinite;
+}
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: .4; }
+}
+
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+@media (max-width: 640px) { .modes { grid-template-columns: 1fr; } }
+.mode-card {
+    background: rgba(255,255,255,.05);
+    border: 2px solid rgba(255,255,255,.1);
+    border-radius: 12px; padding: 20px; transition: all .2s;
+}
+.mode-card:hover { border-color: rgba(255,255,255,.2); }
+.mode-card.active { border-color: #00ff88; background: rgba(0,255,136,.08); }
+.mode-card h3 { color: #00ff88; margin-bottom: 10px; font-size: 1.05em; }
+.mode-card p { color: #a0a0b0; font-size: .85em; margin-bottom: 14px; line-height: 1.5; }
+
+.gesture-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.gesture-item {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(255,255,255,.04); padding: 10px 14px; border-radius: 8px;
+    font-size: .9em;
+}
+.gesture-item span.eff { color: #ffd93d; font-family: monospace; }
+.empty-note { color: #a0a0b0; font-style: italic; font-size: .9em; }
+
+.toast {
+    position: fixed; bottom: 20px; right: 20px;
+    background: #00ff88; color: #002200;
+    padding: 14px 22px; border-radius: 10px;
+    font-weight: 600; opacity: 0; transform: translateY(20px);
+    transition: all .3s; pointer-events: none; z-index: 999;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.err { background: #ff5555; color: #fff; }
+</style>
+<link rel="stylesheet" href="/assets/gesture-editor.css">
+<script defer src="/assets/gesture-editor.js"></script>
+</head>
+<body>
+<div class="container">
+<nav class="portal-nav" aria-label="Навигация"><a class="home-link" data-home href="http://192.168.12.1:57575/"><img src="/assets/logo.svg" alt="" width="26" height="26"><span>← На главную</span></a></nav>
+    <div class="header">
+        <h1>💡 LED панель</h1>
+        <p>Управление светодиодной лентой WS2812 (72 LED)</p>
+    </div>
+
+    <div class="status-bar">
+        <span><span id="statusDot" class="status-dot online"></span> <span id="statusText">Система онлайн</span></span>
+        <span>Режим: <b id="modeLabel" style="color:#fff">статика</b></span>
+        <span id="cameraBadge" style="display:none">📷 камера</span>
+    </div>
+
+    <!-- 1. СТАТИЧЕСКИЙ ЦВЕТ -->
+    <div class="section">
+        <h2>🎨 Сплошной цвет</h2>
+        <p class="desc">Выберите один цвет — вся лента будет гореть этим цветом.</p>
+        <div class="color-picker-row">
+            <div>
+                <input type="color" id="colorPicker" value="#ff0000">
+                <div class="rgb-inputs">
+                    <label>R<input type="number" id="rIn" min="0" max="255" value="255"></label>
+                    <label>G<input type="number" id="gIn" min="0" max="255" value="0"></label>
+                    <label>B<input type="number" id="bIn" min="0" max="255" value="0"></label>
+                </div>
+            </div>
+            <div>
+                <div class="color-preview" id="colorPreview" style="background:#ff0000;color:#fff">#FF0000</div>
+                <div class="btn-row" style="margin-top:12px">
+                    <button class="btn primary" id="applyColorBtn">Применить цвет</button>
+                    <button class="btn danger" id="offBtn">Выключить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. ШАБЛОННЫЕ УЗОРЫ -->
+    <div class="section">
+        <h2>✨ Шаблонные узоры</h2>
+        <p class="desc">Готовые анимации: радуга, огонь, вода, молния, волна.</p>
+        <div class="templates">
+            <div class="template-btn" data-tpl="rainbow"><span class="emoji">🌈</span>Радуга</div>
+            <div class="template-btn" data-tpl="fire"><span class="emoji">🔥</span>Огонь</div>
+            <div class="template-btn" data-tpl="water"><span class="emoji">🌊</span>Вода</div>
+            <div class="template-btn" data-tpl="lightning"><span class="emoji">⚡</span>Молния</div>
+            <div class="template-btn" data-tpl="wave"><span class="emoji">🌊</span>Волна</div>
+        </div>
+    </div>
+
+    <!-- 2a. РЕГУЛЯТОР ВЫСОТЫ ПЛАМЕНИ -->
+    <div class="section" id="fireLenSection" style="display:none">
+        <h2>🔥 Высота пламени</h2>
+        <p class="desc">Сколько светодиодов охватывает огонь (от 1 до 72).</p>
+        <div class="slider-row">
+            <input type="range" id="fireLenRange" min="1" max="72" value="12"
+                   style="accent-color:#ff6b3d">
+            <input type="number" id="fireLenNum" min="1" max="72" value="12">
+        </div>
+    </div>
+
+    <!-- 2b. РЕГУЛЯТОР ВЫСОТЫ ВОДЫ -->
+    <div class="section" id="waterLenSection" style="display:none">
+        <h2>🌊 Высота воды</h2>
+        <p class="desc">Сколько светодиодов охватывает водная волна (от 1 до 72).</p>
+        <div class="slider-row">
+            <input type="range" id="waterLenRange" min="1" max="72" value="18"
+                   style="accent-color:#00aaff">
+            <input type="number" id="waterLenNum" min="1" max="72" value="18">
+        </div>
+    </div>
+
+    <!-- 3. ВЗАИМОДЕЙСТВИЕ С КАМЕРОЙ -->
+    <div class="section">
+        <h2>📷 Взаимодействие с камерой</h2>
+        <p class="desc">При запуске камера освобождается от сервиса видеопотока. При остановке — возвращается ему.</p>
+
+        <!-- Превью потока -->
+        <div class="camera-preview-box" id="cameraPreviewBox">
+            <img id="cameraPreview" src="" alt="Поток с камеры">
+            <div class="badge">🔴 Прямой поток с камеры</div>
+        </div>
+
+        <div class="modes">
+            <div class="mode-card" id="modeTracking">
+                <h3>✋ Трекинг пальцев</h3>
+                <p>Покажите ладонь — сектор загорится зелёным. Загните палец — соответствующий сектор станет красным. Работает для двух рук.</p>
+                <button class="btn primary" id="startTrackingBtn">Запустить</button>
+            </div>
+            <div class="mode-card" id="modeCombo">
+                <h3>🎭 Комбинации в узоры</h3>
+                <p>Покажите сохранённую комбинацию, чтобы включить её узор или цвет.</p>
+                <button class="btn primary" id="startComboBtn">Запустить</button>
+                <div class="gesture-record-controls">
+                    <div class="btn-row">
+                        <button class="btn" id="gestureAdd">Добавить новую комбинацию</button>
+                        <button class="btn" id="gestureRecordCancel" hidden>Отменить запись</button>
+                    </div>
+                    <p id="gestureRecordStatus" role="status"></p>
+                </div>
+                <p class="gesture-error" id="gestureListError" role="status"></p>
+                <div class="gesture-list" id="gestureList"></div>
+            </div>
+        </div>
+        <p class="gesture-error" id="cameraError" role="status"></p>
+        <div class="btn-row" style="margin-top:16px">
+            <button class="btn danger" id="stopCameraBtn" disabled>⏹ Остановить камеру</button>
+        </div>
+    </div>
+
+    <div class="footer" style="text-align:center;color:#a0a0b0;margin-top:20px;font-size:.85em">
+        LED Panel — Orange Pi 4A · порт 3000
+    </div>
+</div>
+
+<dialog class="gesture-dialog" id="gestureEditor" aria-labelledby="gestureEditorTitle">
+    <form id="gestureForm">
+        <h2 id="gestureEditorTitle">Новая комбинация</h2>
+        <p>Ладони идут слева направо в кадре. Если рука одна, используйте первую ладонь.</p>
+        <div id="gestureHands" class="gesture-hands"></div>
+        <label>Название <input id="gestureName" required maxlength="64" autocomplete="off"></label>
+        <label>Узор или цвет
+            <select id="gestureEffect">
+                <option value="wave">Волна</option>
+                <option value="fire">Огонь</option>
+                <option value="water">Вода</option>
+                <option value="lightning">Молния</option>
+                <option value="rainbow">Радуга</option>
+                <option value="color">Сплошной цвет</option>
+                <option value="fingers">Состояние пальцев</option>
+            </select>
+        </label>
+        <label id="gestureColorField" hidden>Цвет <input type="color" id="gestureColor" value="#00ff88"></label>
+        <p class="gesture-error" id="gestureEditorError" role="alert"></p>
+        <div class="btn-row">
+            <button type="button" class="btn" id="gestureEditorCancel">Отменить</button>
+            <button class="btn primary" id="gestureSave">Сохранить</button>
+        </div>
+    </form>
+</dialog>
+
+<dialog class="gesture-dialog" id="gestureDeleteDialog" aria-labelledby="gestureDeleteTitle">
+    <form id="gestureDeleteForm">
+        <h2 id="gestureDeleteTitle">Удалить комбинацию?</h2>
+        <p>«<span id="gestureDeleteName"></span>»</p>
+        <p class="gesture-error" id="gestureDeleteError" role="alert"></p>
+        <div class="btn-row">
+            <button type="button" class="btn" id="gestureDeleteCancel">Отменить</button>
+            <button class="btn danger" id="gestureDeleteConfirm">Удалить</button>
+        </div>
+    </form>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+/* ---------- Toast ---------- */
+function toast(msg, isErr = false) {
+    const t = $('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (isErr ? ' err' : '');
+    setTimeout(() => t.className = 'toast', 2200);
+}
+
+/* ---------- Browser session and strip ownership ---------- */
+let ledSession = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
+let leavingModule = false;
+async function enterModule() {
+    const response = await fetch('/api/enter', {
+        method: 'POST', headers: { 'X-LED-Session': ledSession }
+    });
+    if (!response.ok) throw new Error('Не удалось получить управление LED-лентой');
+}
+let sessionReady = enterModule();
+sessionReady.catch(error => toast(error.message, true));
+
+/* ---------- API helper ---------- */
+async function api(path, body) {
+    const opts = { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-LED-Session': ledSession } };
+    if (body) opts.body = JSON.stringify(body);
+    try {
+        await sessionReady;
+        if (leavingModule) throw new Error('LED-модуль закрывается');
+        const r = await fetch(path, opts);
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || r.statusText);
+        return data;
+    } catch (e) {
+        toast('Ошибка: ' + e.message, true);
+        throw e;
+    }
+}
+
+/* ---------- Camera preview ---------- */
+const camBox = $('cameraPreviewBox');
+const camImg = $('cameraPreview');
+let camRestartTimer = null;
+
+function showCameraPreview() {
+    if (camRestartTimer) { clearTimeout(camRestartTimer); camRestartTimer = null; }
+    camBox.classList.add('active');
+    camImg.src = '/camera_feed?t=' + Date.now();
+}
+function hideCameraPreview() {
+    if (camRestartTimer) { clearTimeout(camRestartTimer); camRestartTimer = null; }
+    camBox.classList.remove('active');
+    camImg.src = '';
+}
+// если MJPEG оборвался — перезапускаем картинку
+camImg.addEventListener('error', () => {
+    if (camBox.classList.contains('active')) {
+        camRestartTimer = setTimeout(showCameraPreview, 2000);
+    }
+});
+
+/* ---------- Color picker ---------- */
+const picker = $('colorPicker');
+const rIn = $('rIn'), gIn = $('gIn'), bIn = $('bIn');
+const preview = $('colorPreview');
+
+function hexToRgb(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+function rgbToHex(r, g, b) {
+    return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+function updateFromHex() {
+    const { r, g, b } = hexToRgb(picker.value);
+    rIn.value = r; gIn.value = g; bIn.value = b;
+    preview.style.background = picker.value;
+    preview.textContent = picker.value.toUpperCase();
+    const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    preview.style.color = lum > 0.5 ? '#000' : '#fff';
+}
+function updateFromRgb() {
+    const r = Math.max(0, Math.min(255, +rIn.value || 0));
+    const g = Math.max(0, Math.min(255, +gIn.value || 0));
+    const b = Math.max(0, Math.min(255, +bIn.value || 0));
+    rIn.value = r; gIn.value = g; bIn.value = b;
+    picker.value = rgbToHex(r, g, b);
+    updateFromHex();
+}
+picker.addEventListener('input', updateFromHex);
+[rIn, gIn, bIn].forEach(el => el.addEventListener('input', updateFromRgb));
+updateFromHex();
+
+/* ---------- Скрытие/показ слайдеров ---------- */
+const fireSection  = $('fireLenSection');
+const waterSection = $('waterLenSection');
+function updateTemplateSections(tpl) {
+    fireSection.style.display  = (tpl === 'fire')  ? 'block' : 'none';
+    waterSection.style.display = (tpl === 'water') ? 'block' : 'none';
+}
+function hideAllSliders() {
+    fireSection.style.display  = 'none';
+    waterSection.style.display = 'none';
+}
+
+/* ---------- Ползунки огня/воды ---------- */
+const fireRange = $('fireLenRange'), fireNum = $('fireLenNum');
+const waterRange = $('waterLenRange'), waterNum = $('waterLenNum');
+
+function syncPair(range, num) {
+    range.addEventListener('input', () => { num.value = range.value; });
+    num.addEventListener('input', () => {
+        const v = Math.max(1, Math.min(72, +num.value || 1));
+        num.value = v; range.value = v;
+    });
+}
+syncPair(fireRange, fireNum);
+syncPair(waterRange, waterNum);
+
+async function sendFireLen()  { await api('/api/fire_len',  { value: +fireNum.value  }); }
+async function sendWaterLen() { await api('/api/water_len', { value: +waterNum.value }); }
+fireRange.addEventListener('change',  sendFireLen);
+fireNum.addEventListener('change',    sendFireLen);
+waterRange.addEventListener('change', sendWaterLen);
+waterNum.addEventListener('change',   sendWaterLen);
+
+/* ---------- Кнопка «Применить цвет» ---------- */
+$('applyColorBtn').addEventListener('click', async () => {
+    const r = +rIn.value, g = +gIn.value, b = +bIn.value;
+    await api('/api/color', { r, g, b });
+    toast(`Цвет RGB(${r},${g},${b}) применён`);
+    clearActive();
+    hideAllSliders();
+    hideCameraPreview();
+});
+
+/* ---------- Кнопка «Выключить» ---------- */
+$('offBtn').addEventListener('click', async () => {
+    await api('/api/stop');
+    toast('Лента выключена');
+    clearActive();
+    hideAllSliders();
+    hideCameraPreview();
+});
+
+/* ---------- Шаблоны ---------- */
+document.querySelectorAll('.template-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+        const tpl = btn.dataset.tpl;
+        await api('/api/template', { name: tpl });
+        clearActive();
+        btn.classList.add('active');
+        updateTemplateSections(tpl);
+        if (tpl === 'fire')  await sendFireLen();
+        if (tpl === 'water') await sendWaterLen();
+        toast('Узор «' + btn.textContent.trim() + '» запущен');
+        hideCameraPreview();
+    });
+});
+
+/* ---------- Режимы камеры ---------- */
+$('startTrackingBtn').addEventListener('click', async () => {
+    toast('Освобождаю камеру...');
+    try {
+        await api('/api/tracking/start');
+    } catch (e) { return; }
+    clearActive();
+    hideAllSliders();
+    $('modeTracking').classList.add('active');
+    toast('Трекинг пальцев запущен');
+    setModeLabel('трекинг пальцев');
+    refreshStatus();
+});
+
+$('startComboBtn').addEventListener('click', async () => {
+    toast('Освобождаю камеру...');
+    try {
+        await api('/api/combo/start');
+    } catch (e) { return; }
+    clearActive();
+    hideAllSliders();
+    $('modeCombo').classList.add('active');
+    toast('Режим комбинаций запущен');
+    setModeLabel('комбинации в узоры');
+    refreshStatus();
+});
+
+$('stopCameraBtn').addEventListener('click', async () => {
+    const capture = finishGestureCapture();
+    $('gestureAdd').disabled = true;
+    hideCameraPreview();
+    try {
+        if (capture) await capture.started.catch(() => {});
+        const result = await api('/api/camera/stop');
+        clearActive();
+        toast(result.stopped ? 'Камера остановлена' : 'Камера завершает захват');
+    } catch { /* API shows the error */ }
+    finally {
+        $('gestureAdd').disabled = false;
+        refreshStatus();
+    }
+});
+
+/* ---------- Вспомогательные ---------- */
+function clearActive() {
+    document.querySelectorAll('.template-btn, .mode-card').forEach(el => el.classList.remove('active'));
+}
+function setModeLabel(text) { $('modeLabel').textContent = text; }
+
+/* ---------- Начальный статус и периодическое обновление ---------- */
+async function refreshStatus() {
+    try {
+        const s = await fetch('/api/status').then(r => r.json());
+        if (s.mode === 'idle')          setModeLabel('фоновый эффект');
+        else if (s.mode === 'static')   setModeLabel('статика');
+        else if (s.mode === 'template') setModeLabel('узор: ' + s.template);
+        else if (s.mode === 'tracking') setModeLabel('трекинг пальцев');
+        else if (s.mode === 'combo')    setModeLabel('комбинации');
+
+        $('cameraBadge').style.display = s.camera_available ? 'inline' : 'none';
+
+        if (typeof s.fire_len === 'number')  { fireRange.value = s.fire_len;  fireNum.value = s.fire_len; }
+        if (typeof s.water_len === 'number') { waterRange.value = s.water_len; waterNum.value = s.water_len; }
+
+        $('cameraError').textContent = s.camera_error || '';
+        const cameraRunning = s.camera_running && !leavingModule;
+        if (cameraRunning && !camBox.classList.contains('active')) showCameraPreview();
+        if (!cameraRunning && camBox.classList.contains('active')) hideCameraPreview();
+        $('stopCameraBtn').disabled = !cameraRunning;
+    } catch (e) { /* ignore */ }
+}
+refreshStatus();
+setInterval(refreshStatus, 5000);
+
+function leaveModule() {
+    if (leavingModule) return;
+    leavingModule = true;
+    finishGestureCapture();
+    hideCameraPreview();
+    const url = '/api/leave?session=' + encodeURIComponent(ledSession);
+    if (!navigator.sendBeacon(url)) fetch(url, { method: 'POST', keepalive: true }).catch(() => {});
+}
+window.addEventListener('pagehide', leaveModule);
+window.addEventListener('pageshow', event => {
+    if (!event.persisted) return;
+    ledSession = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
+    leavingModule = false;
+    sessionReady = enterModule();
+    sessionReady.catch(error => toast(error.message, true));
+});
+setInterval(async () => {
+    if (leavingModule) return;
+    try {
+        await sessionReady;
+        const response = await fetch('/api/heartbeat', { method: 'POST', headers: { 'X-LED-Session': ledSession } });
+        if (response.status === 409 && !leavingModule) {
+            sessionReady = enterModule();
+            await sessionReady;
+        }
+    } catch (error) { /* A disconnected page loses its strip lease after 30 seconds. */ }
+}, 5000);
+// Release promptly and await acknowledgement when the user selects Home.
+document.querySelector('[data-home]').addEventListener('click', async event => {
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    const destination = event.currentTarget.href;
+    leaveModule();
+    try {
+        const response = await fetch('/api/leave?session=' + encodeURIComponent(ledSession), { method: 'POST', keepalive: true });
+        if (!response.ok) throw new Error('Не удалось вернуть фоновый эффект');
+        window.location.assign(destination);
+    } catch (error) { toast(error.message + '. Повторите возврат на главную.', true); }
+});
+
+</script>
+</body>
+</html>

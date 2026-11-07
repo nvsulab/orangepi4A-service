@@ -1,0 +1,24 @@
+[Unit]
+Description=LED Bouncing Light Service
+After=multi-user.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=@PROJECT_DIR@/led-service
+ExecStart=/usr/bin/python3 @PROJECT_DIR@/led-service/led_runner.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+# Configuration
+Environment="LED_COUNT=72"
+Environment="LED_START_SEC=2"
+Environment="LED_START_COLOR=255,0,0"        # red on startup
+Environment="LED_BOUNCE_COLOR=255,128,0"     # orange bouncing light
+Environment="LED_DELAY_MS=40"                # speed of the bouncing dot
+
+[Install]
+WantedBy=multi-user.target

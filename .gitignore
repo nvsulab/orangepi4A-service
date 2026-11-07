@@ -1,0 +1,12 @@
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+*.log
+*.local
+backups/
+
+/dashboard/index.html-backup
+/led-panel/app_backup.py
